@@ -28,7 +28,7 @@ const dishIdMatches = (req, res, next) => {
   } else {
     next({
       status: 400,
-      message: `Dish ids ${id} and ${dishId} do not match`,
+      message: `Dish id does not match route id. Dish: ${id}, Route: ${dishId}.`,
     });
   }
 };
@@ -85,8 +85,7 @@ const create = (req, res) => {
     name: name,
     description: description,
     price: price,
-    image_url,
-    image_url,
+    image_url: image_url,
   };
   dishes.push(newDish);
   res.status(201).json({ data: newDish });
