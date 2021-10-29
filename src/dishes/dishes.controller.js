@@ -77,12 +77,6 @@ const create = (req, res) => {
 const update = (req, res, next) => {
   let dish = res.locals.dish;
   const { data: { name, description, price, image_url } = {} } = req.body;
-  // Object.assign(dish, {
-  //   name: name,
-  //   description: description,
-  //   price: price,
-  //   image_url: image_url,
-  // });
   dish = { ...dish, name, description, price, image_url };
   res.json({ data: dish });
 };
