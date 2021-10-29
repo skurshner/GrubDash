@@ -6,13 +6,13 @@ const orders = require(path.resolve("src/data/orders-data"));
 // Use this function to assigh ID's when necessary
 const nextId = require("../utils/nextId");
 
-// Validation
+// Validation middleware
 const orderExists = (req, res, next) => {
   const { orderId } = req.params;
   const foundOrder = orders.find(order => order.id === orderId);
   if (foundOrder) {
     res.locals.order = foundOrder;
-    return next();
+    next();
   }
   next({
     status: 404,
@@ -46,7 +46,7 @@ const hasValidStatusForUpdate = (req, res, next) => {
 };
 
 const hasValidStatusForDelete = (req, res, next) => {
-  const status = res.locals.order.status;
+  const { status } = res.locals.order;
   if (status !== "pending") {
     next({
       status: 400,
@@ -60,7 +60,7 @@ const hasDeliverTo = (req, res, next) => {
   const { data: { deliverTo } = {} } = req.body;
 
   if (deliverTo && deliverTo.length > 0) {
-    return next();
+    next();
   }
   next({ status: 400, message: "A 'deliverTo' property is required." });
 };
@@ -69,7 +69,7 @@ const hasMobileNumber = (req, res, next) => {
   const { data: { mobileNumber } = {} } = req.body;
 
   if (mobileNumber && mobileNumber.length > 0) {
-    return next();
+    next();
   }
   next({ status: 400, message: "A 'mobileNumber' property is required." });
 };
@@ -78,7 +78,7 @@ const hasDishes = (req, res, next) => {
   const { data: { dishes } = {} } = req.body;
 
   if (dishes && Array.isArray(dishes) && dishes.length > 0) {
-    return next();
+    next();
   }
   next({ status: 400, message: "A 'dishes' property is required." });
 };
@@ -97,12 +97,12 @@ const hasQuantity = (req, res, next) => {
 };
 
 // CRUD Functions
-const read = (req, res) => {
-  res.json({ data: res.locals.order });
-};
-
 const list = (req, res, next) => {
   res.json({ data: orders });
+};
+
+const read = (req, res) => {
+  res.json({ data: res.locals.order });
 };
 
 const create = (req, res) => {
@@ -120,10 +120,12 @@ const create = (req, res) => {
 const update = (req, res, next) => {
   const order = res.locals.order;
   const { data: { deliverTo, mobileNumber, dishes, status } = {} } = req.body;
-  order.deliverTo = deliverTo;
-  order.mobileNumber = mobileNumber;
-  order.dishes = dishes;
-  order.status = status;
+  Object.assign(order, {
+    deliverTo: deliverTo,
+    mobileNumber: mobileNumber,
+    dishes: dishes,
+    status: status,
+  });
 
   res.json({ data: order });
 };
