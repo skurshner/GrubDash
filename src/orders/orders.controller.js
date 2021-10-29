@@ -91,23 +91,18 @@ const create = (req, res) => {
   const { data: { deliverTo, mobileNumber, dishes } = {} } = req.body;
   const newOrder = {
     id: nextId(),
-    deliverTo: deliverTo,
-    mobileNumber: mobileNumber,
-    dishes: dishes,
+    deliverTo,
+    mobileNumber,
+    dishes,
   };
   orders.push(newOrder);
   res.status(201).json({ data: newOrder });
 };
 
 const update = (req, res, next) => {
-  const order = res.locals.order;
+  let order = res.locals.order;
   const { data: { deliverTo, mobileNumber, dishes, status } = {} } = req.body;
-  Object.assign(order, {
-    deliverTo: deliverTo,
-    mobileNumber: mobileNumber,
-    dishes: dishes,
-    status: status,
-  });
+  order = { ...order, deliverTo, mobileNumber, dishes, status };
   res.json({ data: order });
 };
 
