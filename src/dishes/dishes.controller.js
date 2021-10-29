@@ -1,9 +1,7 @@
 const path = require("path");
-
-// Use the existing dishes data
 const dishes = require(path.resolve("src/data/dishes-data"));
 
-// Use this function to assign ID's when necessary
+// Assigns new IDs
 const nextId = require("../utils/nextId");
 
 // Validation middleware
@@ -23,49 +21,34 @@ const dishExists = (req, res, next) => {
 const dishIdMatches = (req, res, next) => {
   const { data: { id } = {} } = req.body;
   const { dishId } = req.params;
-  if (!id || dishId === id) {
-    next();
-  } else {
-    next({
-      status: 400,
-      message: `Dish id does not match route id. Dish: ${id}, Route: ${dishId}.`,
-    });
-  }
+  (!id || dishId === id) && next();
+  next({
+    status: 400,
+    message: `Dish id does not match route id. Dish: ${id}, Route: ${dishId}.`,
+  });
 };
 
 const hasName = (req, res, next) => {
   const { data: { name } = {} } = req.body;
-
-  if (name && name.length > 0) {
-    next();
-  }
+  name && next();
   next({ status: 400, message: "A 'name' property is required." });
 };
 
 const hasDescription = (req, res, next) => {
   const { data: { description } = {} } = req.body;
-
-  if (description && description.length > 0) {
-    next();
-  }
+  description && next();
   next({ status: 400, message: "A 'description' property is required." });
 };
 
 const hasPrice = (req, res, next) => {
   const { data: { price } = {} } = req.body;
-
-  if (price && typeof price === "number" && price > 0) {
-    next();
-  }
+  price && typeof price === "number" && price > 0 && next();
   next({ status: 400, message: "A 'price' property is required." });
 };
 
 const hasImage = (req, res, next) => {
   const { data: { image_url } = {} } = req.body;
-
-  if (image_url && image_url.length > 0) {
-    next();
-  }
+  image_url && next();
   next({ status: 400, message: "An 'image_url' property is required." });
 };
 
@@ -100,7 +83,6 @@ const update = (req, res, next) => {
     price: price,
     image_url: image_url,
   });
-
   res.json({ data: dish });
 };
 

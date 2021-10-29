@@ -1,9 +1,7 @@
 const path = require("path");
-
-// Use the existing order data
 const orders = require(path.resolve("src/data/orders-data"));
 
-// Use this function to assigh ID's when necessary
+// Assigns new IDs
 const nextId = require("../utils/nextId");
 
 // Validation middleware
@@ -23,63 +21,47 @@ const orderExists = (req, res, next) => {
 const orderIdMatches = (req, res, next) => {
   const { data: { id } = {} } = req.body;
   const { orderId } = req.params;
-  if (!id || orderId === id) {
-    next();
-  } else {
-    next({
-      status: 400,
-      message: `Order id does not match route id. Order: ${id}, Route: ${orderId}.`,
-    });
-  }
+  (!id || orderId === id) && next();
+  next({
+    status: 400,
+    message: `Order id does not match route id. Order: ${id}, Route: ${orderId}.`,
+  });
 };
 
 const hasValidStatusForUpdate = (req, res, next) => {
   const { data: { status } = {} } = req.body;
   const validStatus = ["pending", "preparing", "out-for-delivery"];
-  if (!status || !validStatus.includes(status)) {
-    next({
-      status: 400,
-      message: `Order must have a valid status.`,
-    });
-  }
-  next();
+  status && validStatus.includes(status) && next();
+  next({
+    status: 400,
+    message: `Order must have a valid status.`,
+  });
 };
 
 const hasValidStatusForDelete = (req, res, next) => {
   const { status } = res.locals.order;
-  if (status !== "pending") {
-    next({
-      status: 400,
-      message: `Order must have status 'pending' to delete.`,
-    });
-  }
-  next();
+  status == "pending" && next();
+  next({
+    status: 400,
+    message: `Order must have status 'pending' to delete.`,
+  });
 };
 
 const hasDeliverTo = (req, res, next) => {
   const { data: { deliverTo } = {} } = req.body;
-
-  if (deliverTo && deliverTo.length > 0) {
-    next();
-  }
+  deliverTo && next();
   next({ status: 400, message: "A 'deliverTo' property is required." });
 };
 
 const hasMobileNumber = (req, res, next) => {
   const { data: { mobileNumber } = {} } = req.body;
-
-  if (mobileNumber && mobileNumber.length > 0) {
-    next();
-  }
+  mobileNumber && next();
   next({ status: 400, message: "A 'mobileNumber' property is required." });
 };
 
 const hasDishes = (req, res, next) => {
   const { data: { dishes } = {} } = req.body;
-
-  if (dishes && Array.isArray(dishes) && dishes.length > 0) {
-    next();
-  }
+  dishes && Array.isArray(dishes) && dishes.length > 0 && next();
   next({ status: 400, message: "A 'dishes' property is required." });
 };
 
@@ -126,7 +108,6 @@ const update = (req, res, next) => {
     dishes: dishes,
     status: status,
   });
-
   res.json({ data: order });
 };
 
@@ -134,7 +115,6 @@ const destroy = (req, res, next) => {
   const { orderId } = req.params;
   const index = orders.findIndex(order => order.id === orderId);
   orders.splice(index, 1);
-
   res.sendStatus(204);
 };
 
