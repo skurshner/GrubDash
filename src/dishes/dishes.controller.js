@@ -77,10 +77,10 @@ const create = (req, res) => {
 const update = (req, res, next) => {
   const dish = res.locals.dish;
   const { data: { name, description, price, image_url } = {} } = req.body;
-  dish.name !== name ? (dish.name = name) : null;
-  dish.description !== description ? (dish.description = description) : null;
-  dish.price !== price ? (dish.price = price) : null;
-  dish.image_url !== image_url ? (dish.image_url = image_url) : null;
+  dish.name !== name && (dish.name = name);
+  dish.description !== description && (dish.description = description);
+  dish.price !== price && (dish.price = price);
+  dish.image_url !== image_url && (dish.image_url = image_url);
   res.json({ data: dish });
 };
 

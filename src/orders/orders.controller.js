@@ -102,12 +102,10 @@ const create = (req, res) => {
 const update = (req, res, next) => {
   const order = res.locals.order;
   const { data: { deliverTo, mobileNumber, dishes, status } = {} } = req.body;
-  order.deliverTo !== deliverTo ? (order.deliverTo = deliverTo) : null;
-  order.mobileNumber !== mobileNumber
-    ? (order.mobileNumber = mobileNumber)
-    : null;
-  order.dishes !== dishes ? (order.dishes = dishes) : null;
-  order.status !== status ? (order.status = status) : null;
+  order.deliverTo !== deliverTo && (order.deliverTo = deliverTo);
+  order.mobileNumber !== mobileNumber && (order.mobileNumber = mobileNumber);
+  order.dishes !== dishes && (order.dishes = dishes);
+  order.status !== status && (order.status = status);
   res.json({ data: order });
 };
 
