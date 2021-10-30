@@ -7,7 +7,7 @@ const nextId = require("../utils/nextId");
 // Validation middleware
 const orderExists = (req, res, next) => {
   const { orderId } = req.params;
-  const foundOrder = orders.find(order => order.id === orderId);
+  const foundOrder = orders.find(({ id }) => id === orderId);
   if (foundOrder) {
     res.locals.order = foundOrder;
     next();
@@ -20,7 +20,7 @@ const orderExists = (req, res, next) => {
 
 const orderIdMatches = (req, res, next) => {
   const { data: { id } = {} } = req.body;
-  const { orderId } = req.params;
+  const orderId = res.locals.order.id;
   (!id || orderId === id) && next();
   next({
     status: 400,
@@ -30,8 +30,8 @@ const orderIdMatches = (req, res, next) => {
 
 const hasValidStatusForUpdate = (req, res, next) => {
   const { data: { status } = {} } = req.body;
-  const validStatus = ["pending", "preparing", "out-for-delivery"];
-  status && validStatus.includes(status) && next();
+  const validStatuses = ["pending", "preparing", "out-for-delivery"];
+  status && validStatuses.includes(status) && next();
   next({
     status: 400,
     message: `Order must have a valid status.`,

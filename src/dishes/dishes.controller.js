@@ -7,20 +7,20 @@ const nextId = require("../utils/nextId");
 // Validation middleware
 const dishExists = (req, res, next) => {
   const { dishId } = req.params;
-  const foundDish = dishes.find(dish => dish.id === dishId);
+  const foundDish = dishes.find(({ id }) => id === dishId);
   if (foundDish) {
     res.locals.dish = foundDish;
     next();
   }
   next({
     status: 404,
-    message: `Dish id not found: ${req.params.dishId}`,
+    message: `Dish id not found: ${dishId}`,
   });
 };
 
 const dishIdMatches = (req, res, next) => {
   const { data: { id } = {} } = req.body;
-  const { dishId } = req.params;
+  const dishId = res.locals.dish.id;
   (!id || dishId === id) && next();
   next({
     status: 400,
